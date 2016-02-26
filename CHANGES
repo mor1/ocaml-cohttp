@@ -1,9 +1,42 @@
-0.18.2 (2015-06-19):
+0.19.3 (2015-09-28):
+* Support Async 113.00 by explicitly using the blocking Core `printf` (#431)
+* cohttp_curl_async: add `-data-binary` to send POST data. (#425)
 
+0.19.2 (2015-08-20):
+
+* Improve Cohttp_async.Client error handling. When a Uri.t fails to resolve it is
+  now included in the error. (#420)
+
+0.19.1 (2015-08-08):
+
+* Bring make_body_writer and write_header in Cohttp.S.Http_io. Needed by
+  ocaml-git
+
+0.19.0 (2015-08-05):
+Compatibility breaking interface changes:
+* Remove `read_form` from the `Request/Response/Header` interfaces
+  as this should be done in `Body` handling instead (#401).
+
+New features and bug fixes:
+* Remove `IO.write_line` as it was unused in any interfaces.
+* Do not use the `lwt` camlp4 extension. No observable external difference.
+* Do not return a code stacktrace in the default 500 handler.
+* Add `Cohttp.Header.compare` (#411)
+* Fix typos in CLI documentation (#413 via @moonlightdrive)
+* Use the Lwt 2.5.0 buffer API.
+* `Cohttp_lwt.read_response` now has a non-optional `closefn` parameter (#400).
+* Add a `Cohttp_lwt_s` module that contains all the Lwt module types
+  in one convenient place (#397).
+
+0.18.3 (2015-07-12):
+* Allow `DELETE` requests to have request bodies (#383).
+* Improve the Lwt client `callv` for HTTP/1.1 pipelined
+  requests (#379 via Török Edwin).
+
+0.18.2 (2015-06-19):
 * Do not add content encoding for 204's (#375)
 
 0.18.1 (2015-06-05):
-
 * Remove trailing whitespace from headers (#372)
 * Don't reverse order of list valued headers (#372)
 

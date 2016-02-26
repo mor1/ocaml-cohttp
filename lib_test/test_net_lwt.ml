@@ -1,5 +1,4 @@
-(*
- * Copyright (c) 2012 Anil Madhavapeddy <anil@recoil.org>
+(*{{{ Copyright (c) 2012 Anil Madhavapeddy <anil@recoil.org>
  *
  * Permission to use, copy, modify, and distribute this software for any
  * purpose with or without fee is hereby granted, provided that the above
@@ -13,7 +12,7 @@
  * ACTION OF CONTRACT, NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF
  * OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
  *
- *)
+  }}}*)
 
 open OUnit
 open Printf
@@ -37,19 +36,19 @@ let make_net_reqv () =
       Request.make ~meth:`GET ~headers:last_header (Uri.of_string "/foo3"), `Empty;
     ] in
   let uri = Uri.of_string "http://5.153.225.51" in
-  lwt resp = Client.callv uri (Lwt_stream.of_list reqs) in
+  Client.callv uri (Lwt_stream.of_list reqs) >>= fun resp ->
   (* Consume the bodies, and we should get 3 responses *)
   let num = ref 0 in
   Lwt_stream.iter_s (fun (res,body) ->
     (* Consume the body *)
     incr num;
-    lwt _ = Cohttp_lwt_body.to_string body in
+    Cohttp_lwt_body.to_string body >>= fun _ ->
     assert_equal (Response.status res) `Not_found;
     return ()
   ) resp >>= fun () ->
   assert_equal !num 3;
   (* Run the callv without consuming bodies *)
-  lwt resp = Client.callv uri (Lwt_stream.of_list reqs) in
+  Client.callv uri (Lwt_stream.of_list reqs) >>= fun resp ->
   let num = ref 0 in
   Lwt_stream.iter_s (fun (res,body) ->
     (* Do not consume the body *)

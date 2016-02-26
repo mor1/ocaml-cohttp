@@ -1,5 +1,4 @@
-(*
- * Copyright (c) 2012-2013 Anil Madhavapeddy <anil@recoil.org>
+(*{{{ Copyright (c) 2012-2013 Anil Madhavapeddy <anil@recoil.org>
  *
  * Permission to use, copy, modify, and distribute this software for any
  * purpose with or without fee is hereby granted, provided that the above
@@ -13,10 +12,9 @@
  * ACTION OF CONTRACT, NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF
  * OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
  *
- *)
+  }}}*)
 
 module Make(IO : S.IO) : sig
   val parse: IO.ic -> Header.t IO.t
-  val parse_form : Header.t -> IO.ic -> (string * string list) list IO.t
   val write : Header.t -> IO.oc -> unit IO.t
 end

@@ -1,5 +1,4 @@
-(*
- * Copyright (c) 2014 Andy Ray
+(*{{{ Copyright (c) 2014 Andy Ray
  * Copyright (c) 2014 Anil Madhavapeddy <anil@recoil.org>
  *
  * Permission to use, copy, modify, and distribute this software for any
@@ -14,7 +13,7 @@
  * ACTION OF CONTRACT, NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF
  * OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
  *
- *)
+  }}}*)
 
 type 'a t = 'a Lwt.t
 let return = Lwt.return
@@ -24,7 +23,6 @@ type ic = Cohttp.String_io.M.ic
 type oc = Cohttp.String_io.M.oc
 type conn = Cohttp.String_io.M.conn
 
-let iter = Lwt_list.iter_s
 let read_line ic = return (Cohttp.String_io.M.read_line ic)
 let read ic n = return (Cohttp.String_io.M.read ic n)
 

@@ -16,8 +16,8 @@ libraries:
    calls to XMLHTTPRequests.  This is used to compile OCaml libraries like
    the GitHub bindings to JavaScript and still run efficiently.
 
-You can implement other targets using the parser very easily.  Look at the
-`lib/IO.mli` signature and implement that in the desired backend.
+You can implement other targets using the parser very easily. Look at the `IO`
+signature in `lib/s.mli` and implement that in the desired backend.
 
 You can activate some runtime debugging by setting `COHTTP_DEBUG` to any
 value, and all requests and responses will be written to stderr.  Further
@@ -38,6 +38,17 @@ You can also obtain the development release:
 ```
 $ opam pin add cohttp --dev-repo
 ```
+
+### Findlib (Ocamlfind)
+
+Cohttp ships with 6 findlib libraries:
+
+* cohttp - Base `Cohttp` module. No platform specific functionality.
+* cohttp.async - Async backend `Cohttp_async`
+* cohttp.js - Jsoo (XHR) client
+* cohttp.lwt - Unix based lwt backend
+* cohttp.lwt-core - Lwt backend without unix specifics.
+* cohttp.top - Print cohttp types in the toplevel (`#require "cohttp.top"`)
 
 ## Client Tutorial
 
@@ -87,7 +98,7 @@ There's a few things to notice:
 
 Consult the following modules for reference:
 
-* [Cohttp_lwt.Client](https://github.com/mirage/ocaml-cohttp/blob/master/lwt/cohttp_lwt.mli)
+* [Cohttp_lwt.Client](https://github.com/mirage/ocaml-cohttp/blob/master/lwt-core/cohttp_lwt.mli)
 * [Cohttp_async.Client](https://github.com/mirage/ocaml-cohttp/blob/master/async/cohttp_async.mli)
 
 ## Basic Server Tutorial

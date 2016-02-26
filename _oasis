@@ -1,6 +1,6 @@
 OASISFormat: 0.4
 Name:        cohttp
-Version:     0.18.2
+Version:     0.19.3
 Synopsis:    HTTP library for Lwt, Async, JavaScript and Mirage
 Description: CoHTTP is an OCaml library for creating HTTP clients and
   daemons.  It has a portable HTTP parser.  Optional dependencies
@@ -89,7 +89,7 @@ Library cohttp_lwt
   FindlibParent: cohttp
   BuildDepends:  lwt, uri, cohttp
   XMETARequires: lwt, uri, cohttp
-  Modules:       Cohttp_lwt_body, Cohttp_lwt, String_io_lwt
+  Modules:       Cohttp_lwt_body, Cohttp_lwt, Cohttp_lwt_s, String_io_lwt
 
 Library cohttp_lwt_unix
   Build$:        flag(lwt_unix)
@@ -107,7 +107,7 @@ Library cohttp_lwt_xhr
   Path:          js
   Findlibname:   js
   FindlibParent: cohttp
-  BuildDepends:  cohttp.lwt-core, js_of_ocaml, js_of_ocaml.syntax, lwt.syntax
+  BuildDepends:  cohttp.lwt-core, js_of_ocaml, js_of_ocaml.syntax
   XMETARequires: cohttp.lwt-core, js_of_ocaml
   Modules:       Cohttp_lwt_xhr
 
@@ -182,15 +182,6 @@ Executable test_parser
   CompiledObject:     best
   Install:            false
   BuildDepends:       cohttp, cohttp.lwt, oUnit (>= 1.0.2)
-
-Executable test_parser_async
-  Path:               lib_test
-  MainIs:             test_parser_async.ml
-  Build$:             flag(tests) && flag(async)
-  Custom:             true
-  CompiledObject:     best
-  Install:            false
-  BuildDepends:       cohttp, cohttp.async, oUnit (>= 1.0.2)
 
 Executable test_accept
   Path:               lib_test
@@ -397,7 +388,7 @@ Executable "test_xhr"
   Custom:             true
   CompiledObject:     byte
   Install:            false
-  BuildDepends:       cohttp, cohttp.js, lwt.syntax, js_of_ocaml.syntax
+  BuildDepends:       cohttp, cohttp.js, js_of_ocaml.syntax
 
 Executable "async-receive-post"
   Path:               examples/async
@@ -442,7 +433,7 @@ Test test_accept
 
 Test test_header
   Run$:               flag(tests)
-  Command:            $test_header
+  Command:            $test_header -q
   WorkingDirectory:   lib_test
 
 Test test_request
@@ -453,11 +444,6 @@ Test test_request
 Test test_parser
   Run$:               flag(tests) && flag(lwt_unix)
   Command:            $test_parser
-  WorkingDirectory:   lib_test
-
-Test test_parser_async
-  Run$:               flag(tests) && flag(async)
-  Command:            $test_parser_async
   WorkingDirectory:   lib_test
 
 Test test_sanity

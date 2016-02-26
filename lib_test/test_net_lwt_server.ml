@@ -1,5 +1,4 @@
-(*
- * Copyright (c) 2012 Anil Madhavapeddy <anil@recoil.org>
+(*{{{ Copyright (c) 2012 Anil Madhavapeddy <anil@recoil.org>
  *
  * Permission to use, copy, modify, and distribute this software for any
  * purpose with or without fee is hereby granted, provided that the above
@@ -13,7 +12,7 @@
  * ACTION OF CONTRACT, NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF
  * OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
  *
- *)
+  }}}*)
 
 open OUnit
 open Printf
@@ -43,7 +42,7 @@ let make_server () =
     match Uri.path uri with
     |""|"/" -> Server.respond_string ~status:`OK ~body:"helloworld" ()
     |"/post" -> begin
-       lwt body = Cohttp_lwt_body.to_string body in
+       Cohttp_lwt_body.to_string body >>= fun body ->
        Server.respond_string ~status:`OK ~body ()
     end
     |"/postnodrain" -> begin
@@ -72,7 +71,7 @@ let make_server () =
          Some r
        in
        let _ =
-         try_lwt
+         Lwt.catch (fun () ->
            let rec respond () =
               let pp,time = cur_time () in
               print_endline pp;
@@ -83,7 +82,7 @@ let make_server () =
               Lwt_unix.sleep 3.0
               >>= respond
            in respond ()
-         with exn -> return ()
+         ) (fun exn -> return ())
        in
        Server.respond ~headers ~flush:true ~status:`OK ~body ()
     end

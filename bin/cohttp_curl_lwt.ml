@@ -1,5 +1,4 @@
-(*
- * Copyright (c) 2014 Hannes Mehnert
+(*{{{ Copyright (c) 2014 Hannes Mehnert
  * Copyright (c) 2014 Anil Madhavapeddy <anil@recoil.org>
  *
  * Permission to use, copy, modify, and distribute this software for any
@@ -14,7 +13,7 @@
  * ACTION OF CONTRACT, NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF
  * OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
  *
- *)
+  }}}*)
 
 open Lwt
 open Cohttp
@@ -86,7 +85,7 @@ let cmd =
         The output file can also be specified with the $(b,-o) option, and more
         verbose debugging out obtained via the $(b,-v) option.";
     `S "BUGS";
-    `P "Report them to via e-mail to <mirageos-devel@lists.xenproject.org>, or
+    `P "Report them via e-mail to <mirageos-devel@lists.xenproject.org>, or
         on the issue tracker at <https://github.com/mirage/ocaml-cohttp/issues>";
     `S "SEE ALSO";
     `P "$(b,curl)(1), $(b,wget)(1)" ]

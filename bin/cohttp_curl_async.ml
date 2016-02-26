@@ -1,5 +1,4 @@
-(*
- * Copyright (c) 2014 Anil Madhavapeddy <anil@recoil.org>
+(*{{{ Copyright (c) 2014 Anil Madhavapeddy <anil@recoil.org>
  *
  * Permission to use, copy, modify, and distribute this software for any
  * purpose with or without fee is hereby granted, provided that the above
@@ -13,20 +12,20 @@
  * ACTION OF CONTRACT, NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF
  * OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
  *
-*)
+  }}}*)
 
 open Core.Std
 open Async.Std
 open Cohttp_async
 
 let show_headers h =
-  Cohttp.Header.iter (fun k v -> List.iter v ~f:(Printf.eprintf "%s: %s\n%!" k)) h
+  Cohttp.Header.iter (fun k v -> List.iter v ~f:(Core.Std.Printf.eprintf "%s: %s\n%!" k)) h
 
-let make_net_req uri meth' () =
+let make_net_req uri meth' body () =
   let meth = Cohttp.Code.method_of_string meth' in
   let uri = Uri.of_string uri in
   let headers = Cohttp.Header.of_list [ "connection", "close" ] in
-  Client.call meth ~headers uri
+  Client.call meth ~headers ~body:Body.(of_string body) uri
   >>= fun (res, body) ->
   show_headers (Cohttp.Response.headers res);
   body
@@ -39,7 +38,9 @@ let _ =
     (empty
      +> anon ("url" %: string)
      +> flag "-X" (optional_with_default "GET" string)
-          ~doc:" Set HTTP method"
+       ~doc:" Set HTTP method"
+     +> flag "data-binary" (optional_with_default "" string)
+       ~doc:" Data to send when using POST"
     )
     make_net_req
   |> Command.run

@@ -1,5 +1,4 @@
-(*
- * Copyright (c) 2013 Anil Madhavapeddy <anil@recoil.org>
+(*{{{ Copyright (c) 2013 Anil Madhavapeddy <anil@recoil.org>
  *
  * Permission to use, copy, modify, and distribute this software for any
  * purpose with or without fee is hereby granted, provided that the above
@@ -13,26 +12,13 @@
  * ACTION OF CONTRACT, NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF
  * OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
  *
-*)
+  }}}*)
 
 open Core.Std
 open Async.Std
 
-(** Read in a full body and convert to a [string] *)
-
-module IO : (module type of Cohttp_async_io)
-
-module Request : sig
-  type t = Cohttp.Request.t
-  include Cohttp.S.Request with type t := Cohttp.Request.t
-  include Cohttp.S.Http_io with type t := Cohttp.Request.t and module IO=IO
-end
-
-module Response : sig
-  type t = Cohttp.Response.t
-  include Cohttp.S.Response with type t := Cohttp.Response.t
-  include Cohttp.S.Http_io with type t := Cohttp.Response.t and module IO=IO
-end
+module Request : Cohttp.S.Request with type t = Cohttp.Request.t
+module Response : Cohttp.S.Response with type t = Cohttp.Response.t
 
 module Body : sig
   type t = [
@@ -95,6 +81,8 @@ module Client : sig
   val delete :
     ?interrupt:unit Deferred.t ->
     ?headers:Cohttp.Header.t ->
+    ?chunked:bool ->
+    ?body:Body.t ->
     Uri.t ->
     (Response.t * Body.t) Deferred.t
 

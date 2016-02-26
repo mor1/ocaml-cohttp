@@ -1,5 +1,4 @@
-(*
- * Copyright (C) 2012-2014 Anil Madhavapeddy <anil@recoil.org>
+(*{{{ Copyright (C) 2012-2014 Anil Madhavapeddy <anil@recoil.org>
  * Copyright (c) 2014 Rudi Grinberg
  *
  * Permission to use, copy, modify, and distribute this software for any
@@ -14,7 +13,7 @@
  * ACTION OF CONTRACT, NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF
  * OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
  *
- *)
+  }}}*)
 
 (** Module type signatures for Cohttp components *)
 
@@ -40,12 +39,6 @@ module type IO = sig
 
   (** [conn] represents the underlying network flow *)
   type conn
-
-  (** [iter f l] will perform a blocking iteration using
-      [f] over the [l] list.  The result is determined
-      after all the iterating threads have completed in
-      serial. *)
-  val iter : ('a -> unit t) -> 'a list -> unit t
 
   (** [read_line ic] will read a single line terminated
       by CR or CRLF from the input channel [ic].  It returns
@@ -78,16 +71,12 @@ module type Http_io = sig
 
   val read : IO.ic -> [ `Eof | `Invalid of string | `Ok of t ] IO.t
   val has_body : t -> [ `No | `Unknown | `Yes ]
+  val make_body_writer : ?flush:bool -> t -> IO.oc -> writer
   val make_body_reader : t -> IO.ic -> reader
   val read_body_chunk : reader -> Transfer.chunk IO.t
 
-  val is_form: t -> bool
-  val read_form : t -> IO.ic -> (string * string list) list IO.t
-
   val write_header : t -> IO.oc -> unit IO.t
-  val make_body_writer : ?flush:bool -> t -> IO.oc -> writer
   val write_body : writer -> string -> unit IO.t
-  val write_footer : t -> IO.oc -> unit IO.t
   val write : ?flush:bool -> (writer -> unit IO.t) -> t -> IO.oc -> unit IO.t
 end
 

@@ -1,5 +1,4 @@
-(*
- * Copyright (c) 2012 Anil Madhavapeddy <anil@recoil.org>
+(*{{{ Copyright (c) 2012 Anil Madhavapeddy <anil@recoil.org>
  *
  * Permission to use, copy, modify, and distribute this software for any
  * purpose with or without fee is hereby granted, provided that the above
@@ -13,7 +12,7 @@
  * ACTION OF CONTRACT, NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF
  * OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
  *
-*)
+  }}}*)
 
 open Sexplib.Std
 
@@ -83,8 +82,6 @@ module Make(IO : S.IO) = struct
   type writer = Transfer_IO.writer
 
   open IO
-
-  let url_decode url = Uri.pct_decode url
 
   let parse_request_fst_line ic =
     let open Code in
@@ -161,8 +158,8 @@ module Make(IO : S.IO) = struct
   (* Defined for method types in RFC7231 *)
   let has_body req =
     match req.meth with
-    | `GET | `HEAD | `DELETE | `CONNECT | `TRACE -> `No
-    | `POST | `PUT | `PATCH | `OPTIONS | `Other _ ->
+    | `GET | `HEAD | `CONNECT | `TRACE -> `No
+    | `DELETE | `POST | `PUT | `PATCH | `OPTIONS | `Other _ ->
       Transfer.has_body req.encoding
 
   let make_body_reader req ic = Transfer_IO.make_reader req.encoding ic
@@ -204,7 +201,4 @@ module Make(IO : S.IO) = struct
     let writer = make_body_writer ?flush req oc in
     write_body writer >>= fun () ->
     write_footer req oc
-
-  let is_form req = Header.is_form req.headers
-  let read_form req ic = Header_IO.parse_form req.headers ic
 end

@@ -1,5 +1,4 @@
-(*
- * Copyright (c) 2012 Anil Madhavapeddy <anil@recoil.org>
+(*{{{ Copyright (c) 2012 Anil Madhavapeddy <anil@recoil.org>
  *
  * Permission to use, copy, modify, and distribute this software for any
  * purpose with or without fee is hereby granted, provided that the above
@@ -13,18 +12,18 @@
  * ACTION OF CONTRACT, NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF
  * OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
  *
- *)
+  }}}*)
 
+module Request = struct
+  include Cohttp.Request
+  include (Make(Cohttp_lwt_unix_io)
+           : module type of Make(Cohttp_lwt_unix_io) with type t := t)
+end
 
-module Request = Cohttp_lwt.Make_request(Cohttp_lwt_unix_io)
-module Response = Cohttp_lwt.Make_response(Cohttp_lwt_unix_io)
-
-module type C = sig
-  include Cohttp_lwt.Client
-    with module IO = Cohttp_lwt_unix_io
-     and type ctx = Cohttp_lwt_unix_net.ctx
-  val custom_ctx: ?ctx:Conduit_lwt_unix.ctx -> ?resolver:Resolver_lwt.t -> unit -> ctx
-
+module Response = struct
+  include Cohttp.Response
+  include (Make(Cohttp_lwt_unix_io)
+           : module type of Make(Cohttp_lwt_unix_io) with type t := t)
 end
 
 module Client = struct
@@ -56,13 +55,15 @@ module Server = struct
        if Unix.(s.st_kind <> S_REG)
        then fail Isnt_a_file
        else return_unit) >>= fun () ->
-      let buffer_size = 16384 in
-      Lwt_io.open_file ~buffer_size ~mode:Lwt_io.input fname >>= fun ic ->
+      let count = 16384 in
+      Lwt_io.open_file
+        ~buffer:(Lwt_bytes.create count)
+        ~mode:Lwt_io.input fname >>= fun ic ->
       Lwt_io.length ic >>= fun len ->
       let encoding = Cohttp.Transfer.Fixed len in
       let stream = Lwt_stream.from (fun () ->
         Lwt.catch (fun () ->
-          Lwt_io.read ~count:buffer_size ic >|= function
+          Lwt_io.read ~count ic >|= function
           | "" -> None
           | buf -> Some buf)
           (fun exn ->
@@ -73,36 +74,17 @@ module Server = struct
         ignore_result (Lwt_io.close ic));
       let body = Cohttp_lwt_body.of_stream stream in
       let mime_type = Magic_mime.lookup fname in
-      let headers = Cohttp.Header.add_opt_unless_exists headers "content-type" mime_type in
+      let headers = Cohttp.Header.add_opt_unless_exists
+                      headers "content-type" mime_type in
       let res = Cohttp.Response.make ~status:`OK ~encoding ~headers () in
       return (res, body)
     ) (function
       | Unix.Unix_error(Unix.ENOENT,_,_) | Isnt_a_file ->
         respond_not_found ()
-      | exn ->
-        let body = Printexc.to_string exn in
-        respond_error ~status:`Internal_server_error ~body ())
+      | exn -> Lwt.fail exn)
 
-  let create ?timeout ?stop ?(ctx=Cohttp_lwt_unix_net.default_ctx) ?(mode=`TCP (`Port 8080)) spec =
-    Conduit_lwt_unix.serve ?timeout ?stop ~ctx:ctx.Cohttp_lwt_unix_net.ctx ~mode
-      (callback spec)
-end
-
-module type S = sig
-  include Cohttp_lwt.Server with module IO = Cohttp_lwt_unix_io
-
-  val resolve_file :
-    docroot:string -> uri:Uri.t -> string
-
-  val respond_file :
-    ?headers:Cohttp.Header.t ->
-    fname:string -> unit ->
-    (Cohttp.Response.t * Cohttp_lwt_body.t) Lwt.t
-
-  val create :
-    ?timeout:int ->
-    ?stop:unit Lwt.t ->
-    ?ctx:Cohttp_lwt_unix_net.ctx ->
-    ?mode:Conduit_lwt_unix.server -> t -> unit Lwt.t
-
+  let create ?timeout ?stop ?(ctx=Cohttp_lwt_unix_net.default_ctx)
+        ?(mode=`TCP (`Port 8080)) spec =
+    Conduit_lwt_unix.serve ?timeout ?stop ~ctx:ctx.Cohttp_lwt_unix_net.ctx
+      ~mode (callback spec)
 end

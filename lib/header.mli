@@ -1,5 +1,4 @@
-(*
- * Copyright (c) 2012 Anil Madhavapeddy <anil@recoil.org>
+(*{{{ Copyright (c) 2012 Anil Madhavapeddy <anil@recoil.org>
  *
  * Permission to use, copy, modify, and distribute this software for any
  * purpose with or without fee is hereby granted, provided that the above
@@ -13,7 +12,7 @@
  * ACTION OF CONTRACT, NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF
  * OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
  *
- *)
+  }}}*)
 
 (** Map of HTTP header key and value(s) associated with them.  Since HTTP
     headers can contain duplicate keys, this structure can return a list
@@ -60,6 +59,9 @@ val replace : t -> string -> string -> t
 
 (** Check if a key exists in the header. *)
 val mem : t -> string -> bool
+
+(** Structural comparison of two [Header] values. *)
+val compare : t -> t -> int
 
 (** Retrieve a key from a header.  If the header is one of the set of
     headers defined to have list values, then all of the values are

@@ -1,5 +1,4 @@
-(*
-  Copyright (C) 2012, David Sheets <sheets@alum.mit.edu>
+(*{{{opyright (C) 2012, David Sheets <sheets@alum.mit.edu>
 
   Permission to use, copy, modify, and/or distribute this software for
   any purpose with or without fee is hereby granted, provided that the
@@ -14,14 +13,20 @@
   OR PROFITS, WHETHER IN AN ACTION OF CONTRACT, NEGLIGENCE OR OTHER
   TORTIOUS ACTION, ARISING OUT OF OR IN CONNECTION WITH THE USE OR
   PERFORMANCE OF THIS SOFTWARE.
-*)
+  }}}*)
 (* TODO: handle exceptions better *)
-(* TODO: sorting? *)
 
 open Printf
 include Accept_types
 module Parser = Accept_parser
 module Lexer = Accept_lexer
+
+let qsort l =
+  let compare ((i:int),_) (i',_) =
+    (* The inversion is on purpose, we sort the biggest quality first. *)
+    compare i' i
+  in
+  List.stable_sort compare l
 
 let parse_using p s = p Lexer.header_value (Lexing.from_string s)
 let media_ranges = function

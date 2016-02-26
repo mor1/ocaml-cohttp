@@ -1,5 +1,4 @@
-(*
- * Copyright (c) 2012-2013 Anil Madhavapeddy <anil@recoil.org>
+(*{{{ Copyright (c) 2012-2013 Anil Madhavapeddy <anil@recoil.org>
  *
  * Permission to use, copy, modify, and distribute this software for any
  * purpose with or without fee is hereby granted, provided that the above
@@ -13,7 +12,7 @@
  * ACTION OF CONTRACT, NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF
  * OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
  *
-*)
+  }}}*)
 
 open Core.Std
 open Async.Std
@@ -31,22 +30,19 @@ type ic = Reader.t
 type oc = Writer.t
 type conn = unit
 
-let iter fn x =
-  Deferred.List.iter x ~f:fn
-
 let read_line =
   check_debug
     (fun ic ->
        Reader.read_line ic
        >>| function
-       |`Ok s -> Some s
-       |`Eof -> None
+       | `Ok s -> Some s
+       | `Eof -> None
     )
     (fun ic ->
        Reader.read_line ic
        >>| function
-       |`Ok s -> eprintf "<<< %s\n" s; Some s
-       |`Eof -> eprintf "<<<EOF\n"; None
+       | `Ok s -> eprintf "<<< %s\n" s; Some s
+       | `Eof -> eprintf "<<<EOF\n"; None
     )
 
 let read ic len =
@@ -64,19 +60,5 @@ let write =
        eprintf "\n%4d >>> %s" (Pid.to_int (Unix.getpid ())) buf;
        Writer.write oc buf;
        return ())
-
-let write_line oc buf =
-  check_debug
-    (fun oc buf ->
-       Writer.write oc buf;
-       Writer.write oc "\r\n";
-       return ()
-    )
-    (fun oc buf ->
-       eprintf "\n%4d >>>> %s\n" (Pid.to_int (Unix.getpid())) buf;
-       Writer.write oc buf;
-       Writer.write oc "\r\n";
-       return ()
-    )
 
 let flush = Writer.flushed

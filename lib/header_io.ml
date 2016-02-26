@@ -1,5 +1,4 @@
-(*
- * Copyright (c) 2012-2013 Anil Madhavapeddy <anil@recoil.org>
+(*{{{ Copyright (c) 2012-2013 Anil Madhavapeddy <anil@recoil.org>
  * Copyright (c) 2011-2012 Martin Jambon <martin@mjambon.com>
  * Copyright (c) 2010 Mika Illouz
  *
@@ -15,7 +14,7 @@
  * ACTION OF CONTRACT, NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF
  * OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
  *
- *)
+  }}}*)
 
 let split_header str =
   match Stringext.split ~max:2 ~on:':' str with
@@ -42,13 +41,6 @@ module Make(IO : S.IO) = struct
           | _ -> return headers
       end
     in parse_headers' (Header.init ())
-
-  let parse_form headers ic =
-    (* If the form is query-encoded, then extract those parameters also *)
-    let encoding = Header.get_transfer_encoding headers in
-    let reader = Transfer_IO.make_reader encoding ic in
-    Transfer_IO.to_string reader >>= fun body ->
-    return (Uri.query_of_encoded body)
 
   let write headers oc =
     IO.write oc (Header.to_string headers)

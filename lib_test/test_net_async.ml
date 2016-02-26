@@ -1,6 +1,4 @@
-(*
- * Copyright (c) 2012-2013 Anil Madhavapeddy <anil@recoil.org>
- *
+(*{{{ Copyright (c) 2011-2013 Anil Madhavapeddy <anil@recoil.org
  * Permission to use, copy, modify, and distribute this software for any
  * purpose with or without fee is hereby granted, provided that the above
  * copyright notice and this permission notice appear in all copies.
@@ -13,14 +11,15 @@
  * ACTION OF CONTRACT, NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF
  * OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
  *
- *)
+  }}}*)
 
 open Core.Std
 open Async.Std
 open Cohttp_async
 
 let show_headers h =
-  Cohttp.Header.iter (fun k v -> List.iter v ~f:(Printf.eprintf "%s: %s\n%!" k)) h
+  Cohttp.Header.iter (fun k v ->
+    List.iter v ~f:(Log.Global.info "%s: %s\n%!" k)) h
 
 let make_net_req () =
   let headers = Cohttp.Header.of_list [ "connection", "close" ] in
